@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Abhinav Banthia | Digital Card</title>
+<meta name="theme-color" content="#eaf1f9" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#0b0f16" media="(prefers-color-scheme: dark)" />
+<style>
+  :root {
+    --bg: #eaf1f9;
+    --card: #ffffff;
+    --hero1: #b8dbfa; --hero2: #d9ecfd;
+    --panel: #f5f8fc;
+    --tint: #e3f0fd;
+    --ink: #14181f;
+    --muted: #5d6676;
+    --line: rgba(20,40,80,.08);
+    --btn-bg: #14181f; --btn-ink: #fff;
+    --accent: #2a7de1;
+    --shadow: 0 30px 70px rgba(40,80,140,.20), 0 2px 8px rgba(40,80,140,.08);
+    --orb1: #c9e1fa; --orb2: #dbe9f8; --orb3: #f0f6fd;
+    --spring: cubic-bezier(.34,1.56,.64,1);
+    --ease: cubic-bezier(.22,1,.36,1);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0b0f16;
+      --card: #141a24;
+      --hero1: #25456d; --hero2: #1a2e4a;
+      --panel: #1b2230;
+      --tint: #182a42;
+      --ink: #f3f6fb;
+      --muted: #9aa5b8;
+      --line: rgba(255,255,255,.08);
+      --btn-bg: #f3f6fb; --btn-ink: #14181f;
+      --accent: #6aa9f5;
+      --shadow: 0 30px 80px rgba(0,0,0,.6), 0 0 0 .5px rgba(255,255,255,.06);
+      --orb1: #17304f; --orb2: #122238; --orb3: #1c2a3f;
+    }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { min-height: 100%; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Inter", "Helvetica Neue", "Segoe UI", Roboto, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    background: var(--bg); color: var(--ink);
+    min-height: 100vh; min-height: 100dvh;
+    display: flex; align-items: center; justify-content: center;
+    padding: calc(20px + env(safe-area-inset-top, 0px)) 16px calc(20px + env(safe-area-inset-bottom, 0px));
+    overflow-x: hidden;
+  }
+
+  .orb { position: fixed; border-radius: 50%; filter: blur(80px); opacity: .9; z-index: 0; pointer-events: none; }
+  .o1 { width: 340px; height: 340px; background: var(--orb1); top: -90px; left: -90px; animation: drift1 16s ease-in-out infinite alternate; }
+  .o2 { width: 300px; height: 300px; background: var(--orb2); bottom: -80px; right: -70px; animation: drift2 19s ease-in-out infinite alternate; }
+  .o3 { width: 240px; height: 240px; background: var(--orb3); top: 45%; left: 55%; animation: drift3 22s ease-in-out infinite alternate; }
+  @keyframes drift1 { to { transform: translate(90px, 120px) scale(1.15); } }
+  @keyframes drift2 { to { transform: translate(-110px, -90px) scale(1.1); } }
+  @keyframes drift3 { to { transform: translate(-120px, 80px) scale(.9); } }
+
+  .card {
+    position: relative; z-index: 1;
+    width: 100%; max-width: 400px;
+    background: var(--card);
+    border-radius: 38px;
+    box-shadow: var(--shadow);
+    padding: 10px;
+    transform-style: preserve-3d;
+    transition: transform .25s var(--ease);
+    animation: rise .9s var(--spring) both;
+  }
+  @keyframes rise { from { opacity: 0; transform: translateY(40px) scale(.95); } to { opacity: 1; transform: none; } }
+
+  .in { opacity: 0; animation: fadeUp .7s var(--ease) forwards; animation-delay: calc(.25s + var(--i) * .07s); }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+  /* Hero panel */
+  .hero {
+    position: relative; text-align: center;
+    background: linear-gradient(180deg, var(--hero1), var(--hero2));
+    border-radius: 30px 30px 26px 26px;
+    padding: 28px 22px 22px;
+    overflow: hidden;
+  }
+  .hero::before { /* soft light bloom */
+    content: ""; position: absolute; width: 260px; height: 260px; border-radius: 50%;
+    top: -120px; left: 50%; transform: translateX(-50%);
+    background: radial-gradient(circle, rgba(255,255,255,.55), transparent 70%);
+    pointer-events: none;
+  }
+  .photo-wrap { position: relative; width: 136px; height: 136px; margin: 0 auto 16px; }
+  .photo {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    border-radius: 50%; object-fit: cover; display: block;
+    background: #cfd3da;
+    border: 5px solid #fff;
+    box-shadow: 0 14px 32px rgba(20,50,100,.25);
+  }
+  .badge {
+    position: absolute; right: -4px; bottom: 2px;
+    width: 42px; height: 42px; border-radius: 50%;
+    background: #fff; object-fit: contain; padding: 2px;
+    box-shadow: 0 6px 14px rgba(20,50,100,.3), 0 0 0 3px #fff;
+    animation: pop .6s var(--spring) .9s both;
+  }
+  @keyframes pop { from { transform: scale(0); } to { transform: scale(1); } }
+
+  h1 { position: relative; font-size: 1.75rem; line-height: 1.1; font-weight: 700; letter-spacing: -.025em; color: #10151c; }
+  .role { position: relative; font-size: .93rem; color: #4a5a70; margin-top: 7px; line-height: 1.4; }
+  @media (prefers-color-scheme: dark) {
+    h1 { color: #f3f6fb; } .role { color: #b6c4d8; }
+  }
+
+  .connect {
+    position: relative; overflow: hidden;
+    display: block; width: 100%; min-height: 52px;
+    margin-top: 20px; border: 0; border-radius: 999px;
+    background: var(--btn-bg); color: var(--btn-ink);
+    font: inherit; font-size: 1.02rem; font-weight: 600; letter-spacing: -.01em;
+    cursor: pointer;
+    box-shadow: 0 10px 22px rgba(20,40,80,.28);
+    transition: transform .35s var(--spring), box-shadow .25s, background .3s;
+  }
+  .connect::after {
+    content: ""; position: absolute; top: 0; bottom: 0; width: 45%; left: -60%;
+    background: linear-gradient(100deg, transparent, rgba(255,255,255,.35), transparent);
+    transform: skewX(-20deg);
+    animation: shine 3.6s ease-in-out 1.6s infinite;
+  }
+  @keyframes shine { 0%, 60% { left: -60%; } 100% { left: 130%; } }
+  .connect:active { transform: scale(.96); box-shadow: 0 4px 10px rgba(20,40,80,.25); }
+  .connect.done { background: #34c759; color: #fff; }
+
+  /* Action card */
+  .actions {
+    margin-top: 10px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 26px;
+    padding: 18px 8px 12px;
+  }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px 4px; }
+  .tile {
+    display: flex; flex-direction: column; align-items: center; gap: 9px;
+    text-decoration: none; color: var(--ink);
+    background: none; border: 0; font: inherit; cursor: pointer;
+    min-height: 44px;
+  }
+  .ico {
+    width: 58px; height: 58px; border-radius: 19px;
+    display: grid; place-items: center;
+    background: var(--card);
+    border: 1px solid var(--line);
+    box-shadow: 0 6px 16px rgba(30,60,110,.10);
+    transition: transform .4s var(--spring), box-shadow .3s, background .25s, color .25s;
+    color: var(--c);
+  }
+  .ico svg { width: 27px; height: 27px; fill: currentColor; }
+  .tile:hover .ico { transform: translateY(-4px) scale(1.05); background: var(--c); color: #fff; box-shadow: 0 14px 26px rgba(30,60,110,.25); }
+  .tile:active .ico { transform: scale(.9); transition-duration: .12s; }
+  .tile span { font-size: .76rem; color: var(--muted); font-weight: 500; }
+
+  .c-call  { --c: #1fa84a; }
+  .c-wa    { --c: #12a84a; }
+  .c-mail  { --c: #1a7cf5; }
+  .c-web   { --c: #0a5fd8; }
+  .c-in    { --c: #0a66c2; }
+  .c-share { --c: #7a56e6; }
+
+  /* Intro box */
+  .intro {
+    margin-top: 10px;
+    background: var(--tint);
+    border-radius: 24px;
+    padding: 18px 20px;
+    font-size: .9rem; line-height: 1.6; color: var(--muted);
+    text-align: left;
+  }
+  @media (prefers-color-scheme: dark) { .intro { color: #b3c0d4; } }
+
+  .foot { padding: 16px 0 10px; text-align: center; font-size: .72rem; color: var(--muted); opacity: .85; }
+
+  :focus-visible { outline: 3px solid #0a84ff; outline-offset: 4px; border-radius: 14px; }
+
+  .toast {
+    position: fixed; left: 50%; z-index: 5;
+    bottom: calc(26px + env(safe-area-inset-bottom, 0px));
+    transform: translateX(-50%) translateY(30px) scale(.9);
+    background: var(--card); color: var(--ink);
+    border: 1px solid var(--line);
+    padding: 12px 20px; border-radius: 999px; font-size: .9rem; font-weight: 500;
+    box-shadow: 0 12px 30px rgba(0,0,0,.2);
+    opacity: 0; pointer-events: none; transition: .45s var(--spring);
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .in, .card, .badge { opacity: 1 !important; }
+  }
+</style>
+</head>
+<body>
+  <div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div>
+
+  <main class="card" id="card">
+    <section class="hero">
+      <div class="photo-wrap in" style="--i:0">
+        <img class="photo" src="images/abhinav_img.png" alt="Abhinav Banthia" />
+        <img class="badge" src="images/Manu_logo.png" alt="Manu Yantralaya" />
+      </div>
+
+      <h1 class="in" style="--i:1">Abhinav Banthia</h1>
+      <p class="role in" style="--i:2">Managing Director<br />Manu Yantralaya Pvt. Ltd.</p>
+
+      <button class="connect in" style="--i:3" id="saveBtn" type="button">Save Contact</button>
+    </section>
+
+    <section class="actions in" style="--i:4">
+      <nav class="grid" aria-label="Contact links">
+        <a class="tile" href="tel:+919829058493">
+          <div class="ico c-call"><svg viewBox="0 0 24 24"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25c1.1.37 2.3.57 3.6.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.6a1 1 0 0 1-.25 1z"/></svg></div>
+          <span>Call</span>
+        </a>
+        <a class="tile" href="https://wa.me/919829058493" target="_blank" rel="noopener">
+          <div class="ico c-wa"><svg viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:1.8;stroke-linejoin:round"><path d="M12 2.5a9.5 9.5 0 0 0-8.1 14.5L2.5 21.5l4.6-1.3A9.5 9.5 0 1 0 12 2.5z"/><path style="fill:currentColor;stroke:none" transform="translate(6.4 6.4) scale(.45)" d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25c1.1.37 2.3.57 3.6.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.6a1 1 0 0 1-.25 1z"/></svg></div>
+          <span>WhatsApp</span>
+        </a>
+        <a class="tile" href="mailto:a.banthia@manujaipur.com">
+          <div class="ico c-mail"><svg viewBox="0 0 24 24"><path d="M3 5h18a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1zm9 7.2L4.5 7v.1L12 13l7.5-5.9V7L12 12.2z"/></svg></div>
+          <span>Email</span>
+        </a>
+        <a class="tile" href="https://manujaipur.com/" target="_blank" rel="noopener">
+          <div class="ico c-web"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm6.9 9h-3a15.6 15.6 0 0 0-1.3-5A8 8 0 0 1 18.9 11zM12 4c.8 1 1.6 2.8 2 7h-4c.4-4.2 1.2-6 2-7zM4.1 13h3a15.6 15.6 0 0 0 1.3 5A8 8 0 0 1 4.1 13zm3-2h-3a8 8 0 0 1 4.3-5 15.6 15.6 0 0 0-1.3 5zM12 20c-.8-1-1.6-2.8-2-7h4c-.4 4.2-1.2 6-2 7zm2.6-2a15.6 15.6 0 0 0 1.3-5h3a8 8 0 0 1-4.3 5z"/></svg></div>
+          <span>Website</span>
+        </a>
+        <a class="tile" href="https://www.linkedin.com/in/abhinav-b-380468138?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" target="_blank" rel="noopener">
+          <div class="ico c-in"><svg viewBox="0 0 24 24"><path d="M4.5 3A2 2 0 1 0 4.5 7 2 2 0 0 0 4.5 3zM3 9h3v12H3zM9 9h2.9v1.6h.1c.4-.8 1.5-1.9 3.3-1.9 3.5 0 4.2 2.3 4.2 5.3V21h-3v-6.2c0-1.5 0-3.3-2-3.3s-2.3 1.6-2.3 3.2V21H9z"/></svg></div>
+          <span>LinkedIn</span>
+        </a>
+        <button class="tile" id="shareBtn" type="button">
+          <div class="ico c-share"><svg viewBox="0 0 24 24"><path d="M18 16a3 3 0 0 0-2.2 1l-7-3.5a3 3 0 0 0 0-3l7-3.5A3 3 0 1 0 15 5.5l-7 3.5a3 3 0 1 0 0 6l7 3.5A3 3 0 1 0 18 16z"/></svg></div>
+          <span>Share</span>
+        </button>
+      </nav>
+    </section>
+
+    <p class="intro in" style="--i:5">Managing Director at Manu Yantralaya. Leading our mission to supply world-class bearing and automotive solutions across 20+ countries. Passionate about quality, sustainability, and supporting startups. Let's connect!</p>
+
+    <p class="foot in" style="--i:6">Manu Yantralaya Pvt. Ltd., Jaipur</p>
+  </main>
+
+  <div class="toast" id="toast" role="status"></div>
+
+<script>
+  // ---- Contact details (edit here if anything changes) ----
+  const CONTACT = {
+    first: "Abhinav", last: "Banthia",
+    org: "Manu Yantralaya Pvt. Ltd.", title: "Managing Director",
+    phone: "+919829058493", email: "a.banthia@manujaipur.com",
+    url: "https://manujaipur.com/",
+    city: "Jaipur", region: "Rajasthan", country: "India"
+  };
+
+  const buzz = () => { try { navigator.vibrate && navigator.vibrate(12); } catch (e) {} };
+  document.querySelectorAll(".tile, .connect").forEach(el => el.addEventListener("pointerdown", buzz));
+
+  function toast(msg) {
+    const t = document.getElementById("toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    clearTimeout(toast._t);
+    toast._t = setTimeout(() => t.classList.remove("show"), 2200);
+  }
+
+  function buildVCard(photoB64) {
+    const c = CONTACT;
+    const lines = [
+      "BEGIN:VCARD", "VERSION:3.0",
+      `N:${c.last};${c.first};;;`, `FN:${c.first} ${c.last}`,
+      `ORG:${c.org}`, `TITLE:${c.title}`,
+      `TEL;TYPE=CELL,VOICE:${c.phone}`,
+      `EMAIL;TYPE=INTERNET,WORK:${c.email}`,
+      `URL:${c.url}`,
+      `ADR;TYPE=WORK:;;;${c.city};${c.region};;${c.country}`
+    ];
+    if (photoB64) lines.push(`PHOTO;ENCODING=b;TYPE=JPEG:${photoB64}`);
+    lines.push("END:VCARD");
+    return lines.join("\r\n");
+  }
+
+  // Embed the profile photo in the contact (skipped silently if it can't load)
+  function getPhotoB64() {
+    return new Promise(resolve => {
+      const img = document.querySelector(".photo");
+      if (!img.complete || !img.naturalWidth) return resolve("");
+      try {
+        const size = 256, cv = document.createElement("canvas");
+        cv.width = cv.height = size;
+        const s = Math.min(img.naturalWidth, img.naturalHeight);
+        cv.getContext("2d").drawImage(img, (img.naturalWidth - s) / 2, (img.naturalHeight - s) / 2, s, s, 0, 0, size, size);
+        resolve(cv.toDataURL("image/jpeg", 0.85).split(",")[1] || "");
+      } catch (e) { resolve(""); }
+    });
+  }
+
+  const saveBtn = document.getElementById("saveBtn");
+  saveBtn.addEventListener("click", async () => {
+    const vcf = buildVCard(await getPhotoB64());
+    const blob = new Blob([vcf], { type: "text/vcard;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = "Abhinav_Banthia.vcf";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+    saveBtn.classList.add("done");
+    saveBtn.textContent = "Contact ready ✓";
+    toast("Open the file to add to Contacts");
+    setTimeout(() => { saveBtn.classList.remove("done"); saveBtn.textContent = "Save Contact"; }, 3000);
+  });
+
+  document.getElementById("shareBtn").addEventListener("click", async () => {
+    const data = { title: "Abhinav Banthia", text: "Abhinav Banthia, Managing Director, Manu Yantralaya", url: location.href };
+    try {
+      if (navigator.share) await navigator.share(data);
+      else { await navigator.clipboard.writeText(location.href); toast("Link copied"); }
+    } catch (e) { /* cancelled */ }
+  });
+
+  // Subtle 3D tilt on desktop (pointer devices only)
+  const card = document.getElementById("card");
+  if (window.matchMedia("(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)").matches) {
+    window.addEventListener("pointermove", e => {
+      const x = (e.clientX / innerWidth - .5) * 2, y = (e.clientY / innerHeight - .5) * 2;
+      card.style.transform = `perspective(1000px) rotateY(${x * 4}deg) rotateX(${-y * 4}deg)`;
+    });
+    window.addEventListener("pointerleave", () => { card.style.transform = ""; });
+  }
+</script>
+</body>
+</html>
